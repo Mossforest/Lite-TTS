@@ -17,6 +17,8 @@ from model.text_encoder import TextEncoder
 from model.diffusion import Diffusion
 from model.utils import sequence_mask, generate_path, duration_loss, fix_len_compatibility
 
+from ptq4dm.quant_model import QuantModel
+
 
 class GradTTS(BaseModule):
     def __init__(self, n_vocab, n_spks, spk_emb_dim, n_enc_channels, filter_channels, filter_channels_dp, 
@@ -179,3 +181,50 @@ class GradTTS(BaseModule):
         prior_loss = prior_loss / (torch.sum(y_mask) * self.n_feats)
         
         return dur_loss, prior_loss, diff_loss
+
+
+class LiteTTS(GradTTS):
+    def __init__(self, n_vocab, n_spks, spk_emb_dim, n_enc_channels, filter_channels, filter_channels_dp, 
+                 n_heads, n_enc_layers, enc_kernel, enc_dropout, window_size, 
+                 n_feats, dec_dim, beta_min, beta_max, pe_scale):
+        super(LiteTTS, self).__init__()
+    
+    def quant_model(self, args):
+        wq_params = {
+            "n_bits": args.n_bits_w,
+            "channel_wise": args.channel_wise,
+            "scale_method": args.init_wmode,
+            "symmetric": True,
+        }
+        aq_params = {
+            "n_bits": args.n_bits_a,
+            "channel_wise": False,
+            "scale_method": args.init_amode,
+            "leaf_param": True,
+            "prob": args.prob,
+            "symmetric": True,
+        }
+
+        self.decoder_q = QuantModel(
+            model=self.decoder, weight_quant_params=wq_params, act_quant_params=aq_params
+        )
+        self.decoder_q.cuda()
+        self.decoder_q.eval()
+        
+        if not args.disable_8bit_head_stem:
+            print("Setting the first and the last layer to 8-bit")
+            self.decoder_q.set_first_last_layer_to_8bit()
+        # # if args.mixup_quant_on_cosine:
+        # print("Setting the cosine embedding layer to 32-bit")
+        # qnn.set_cosine_embedding_layer_to_32bit()
+
+        self.decoder_q.disable_network_output_quantization()
+        print("check the model!")
+        print(self.decoder_q)
+
+    @torch.no_grad()
+    def forward(self, x, x_lengths, n_timesteps, temperature=1.0, stoc=False, spk=None, length_scale=1.0):
+        pass
+
+    def compute_loss(self, x, x_lengths, y, y_lengths, spk=None, out_size=None):
+        pass
