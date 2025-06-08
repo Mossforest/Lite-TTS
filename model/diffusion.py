@@ -273,7 +273,34 @@ class Diffusion(BaseModule):
                 dxt = dxt * noise_t * h
             xt = (xt - dxt) * mask
         return xt
+    
+    
+    @torch.no_grad()
+    def reverse_diffusion_calib(self, z, mask, mu, n_timesteps, times, stoc=False, spk=None):
+        h = 1.0 / n_timesteps
+        xt = z * mask
+        for i in range(n_timesteps):
+            t = (1.0 - (i + 0.5)*h) * torch.ones(z.shape[0], dtype=z.dtype, 
+                                                 device=z.device)
+            time = t.unsqueeze(-1).unsqueeze(-1)
+            noise_t = get_noise(time, self.beta_min, self.beta_max, 
+                                cumulative=False)
+            if stoc:  # adds stochastic term
+                dxt_det = 0.5 * (mu - xt) - self.estimator(xt, mask, mu, t, spk)
+                dxt_det = dxt_det * noise_t * h
+                dxt_stoc = torch.randn(z.shape, dtype=z.dtype, device=z.device,
+                                       requires_grad=False)
+                dxt_stoc = dxt_stoc * torch.sqrt(noise_t * h)
+                dxt = dxt_det + dxt_stoc
+            else:
+                dxt = 0.5 * (mu - xt - self.estimator(xt, mask, mu, t, spk))
+                dxt = dxt * noise_t * h
+            xt = (xt - dxt) * mask
+            if i == times:
+                return xt
+            return None
 
+    
     @torch.no_grad()
     def forward(self, z, mask, mu, n_timesteps, stoc=False, spk=None):
         return self.reverse_diffusion(z, mask, mu, n_timesteps, stoc, spk)

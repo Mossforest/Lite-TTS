@@ -43,6 +43,7 @@ if __name__ == '__main__':
         spk = torch.LongTensor([args.speaker_id]).cuda()
     else:
         spk = None
+
     
     print('Initializing Grad-TTS...')
     generator = GradTTS(len(symbols)+1, params.n_spks, params.spk_emb_dim,
