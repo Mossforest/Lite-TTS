@@ -46,6 +46,7 @@ Put necessary Grad-TTS and HiFi-GAN checkpoints into `checkpts` folder in root G
 3. Run script `inference.py` by providing path to the text file, path to the Grad-TTS checkpoint, number of iterations to be used for reverse diffusion (default: 10) and speaker id if you want to perform multispeaker inference:
     ```bash
     python inference.py -f <your-text-file> -c <grad-tts-checkpoint> -t <number-of-timesteps> -s <speaker-id-if-multispeaker>
+    python inference_ptq.py -f /inspire/hdd/ws-f4d69b29-e0a5-44e6-bd92-acf4de9990f0/public-project/chenxinyan-240108120066/chenxinyan/Lite-TTS/data/a.txt -c /inspire/hdd/ws-f4d69b29-e0a5-44e6-bd92-acf4de9990f0/public-project/chenxinyan-240108120066/chenxinyan/Lite-TTS/checkpts/grad-tts-old.pt --channel_wise
     ```
 4. Check out folder called `out` for generated audios.
 

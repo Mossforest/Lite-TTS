@@ -10,6 +10,7 @@ import math
 import random
 
 import torch
+import torch.nn as nn
 
 from model import monotonic_align
 from model.base import BaseModule
@@ -17,7 +18,7 @@ from model.text_encoder import TextEncoder
 from model.diffusion import Diffusion
 from model.utils import sequence_mask, generate_path, duration_loss, fix_len_compatibility
 
-from ptq4dm.quant_model import QuantModel
+from ptq4dm import QuantModel, QuantModule, BaseQuantBlock, set_act_quantize_params, set_weight_quantize_params, layer_reconstruction, block_reconstruction
 
 
 class GradTTS(BaseModule):
@@ -57,7 +58,7 @@ class GradTTS(BaseModule):
             2. decoder outputs
             3. generated alignment
         
-        Args:
+        params:
             x (torch.Tensor): batch of texts, converted to a tensor with phoneme embedding ids.
             x_lengths (torch.Tensor): lengths of texts in batch.
             n_timesteps (int): number of steps to use for reverse diffusion in decoder.
@@ -95,6 +96,13 @@ class GradTTS(BaseModule):
         # Sample latent representation from terminal distribution N(mu_y, I)
         z = mu_y + torch.randn_like(mu_y, device=mu_y.device) / temperature
         # Generate sample by performing reverse dynamics
+        # print(f'{z.shape=}')
+        # print(f'{y_mask.shape=}')
+        # print(f'{mu_y.shape=}')
+        # breakpoint()
+        # z.shape=torch.Size([1, 80, 100])
+        # y_mask.shape=torch.Size([1, 1, 100])
+        # mu_y.shape=torch.Size([1, 80, 100])
         decoder_outputs = self.decoder(z, y_mask, mu_y, n_timesteps, stoc, spk)
         decoder_outputs = decoder_outputs[:, :, :y_max_length]
 
@@ -107,7 +115,7 @@ class GradTTS(BaseModule):
             2. prior loss: loss between mel-spectrogram and encoder outputs.
             3. diffusion loss: loss between gaussian noise and its reconstruction by diffusion-based decoder.
             
-        Args:
+        params:
             x (torch.Tensor): batch of texts, converted to a tensor with phoneme embedding ids.
             x_lengths (torch.Tensor): lengths of texts in batch.
             y (torch.Tensor): batch of corresponding mel-spectrograms.
@@ -183,25 +191,41 @@ class GradTTS(BaseModule):
         return dur_loss, prior_loss, diff_loss
 
 
+def random_calib_data_generator(shape, num_samples, device):
+    calib_data = []
+    mu_y = []
+    for batch in range(num_samples):
+        img = torch.randn(*shape, device=device)
+        img2 = torch.randn(*shape, device=device)
+        calib_data.append(img)
+        mu_y.append(img2)
+    t = torch.tensor([1] * num_samples, device=device)  # TODO timestep gen
+    return torch.cat(calib_data, dim=0) #, t, torch.cat(mu_y, dim=0)
+
+
 class LiteTTS(GradTTS):
     def __init__(self, n_vocab, n_spks, spk_emb_dim, n_enc_channels, filter_channels, filter_channels_dp, 
                  n_heads, n_enc_layers, enc_kernel, enc_dropout, window_size, 
                  n_feats, dec_dim, beta_min, beta_max, pe_scale):
-        super(LiteTTS, self).__init__()
+        super(LiteTTS, self).__init__(n_vocab, n_spks, spk_emb_dim, n_enc_channels, filter_channels, filter_channels_dp, 
+                 n_heads, n_enc_layers, enc_kernel, enc_dropout, window_size, 
+                 n_feats, dec_dim, beta_min, beta_max, pe_scale)
     
-    def quant_model(self, args):
+    def quant_model(self, params):
+        # print(self.decoder)
+        # print('\n\n\n\n\n')
         wq_params = {
-            "n_bits": args.n_bits_w,
-            "channel_wise": args.channel_wise,
-            "scale_method": args.init_wmode,
+            "n_bits": params.n_bits_w,
+            "channel_wise": params.channel_wise,
+            "scale_method": params.init_wmode,
             "symmetric": True,
         }
         aq_params = {
-            "n_bits": args.n_bits_a,
+            "n_bits": params.n_bits_a,
             "channel_wise": False,
-            "scale_method": args.init_amode,
+            "scale_method": params.init_amode,
             "leaf_param": True,
-            "prob": args.prob,
+            "prob": params.prob,
             "symmetric": True,
         }
 
@@ -211,16 +235,89 @@ class LiteTTS(GradTTS):
         self.decoder_q.cuda()
         self.decoder_q.eval()
         
-        if not args.disable_8bit_head_stem:
+        if not params.disable_8bit_head_stem:
             print("Setting the first and the last layer to 8-bit")
             self.decoder_q.set_first_last_layer_to_8bit()
-        # # if args.mixup_quant_on_cosine:
+        # # if params.mixup_quant_on_cosine:
         # print("Setting the cosine embedding layer to 32-bit")
         # qnn.set_cosine_embedding_layer_to_32bit()
 
         self.decoder_q.disable_network_output_quantization()
-        print("check the model!")
-        print(self.decoder_q)
+        # print("check the model!")
+        # print(self.decoder_q)
+        
+        
+        # random data calibrate
+        cali_data = random_calib_data_generator(
+            [1, params.n_feats, 100], params.calib_num_samples, "cuda")  # ?: 100 not found source
+        # print('the quantized model is below!')
+        # Kwargs for weight rounding calibration
+        assert params.wwq is True
+        kwargs = dict(
+            cali_data=cali_data,
+            iters=params.iters_w,
+            weight=params.weight,
+            b_range=(params.b_start, params.b_end),
+            warmup=params.warmup,
+            opt_mode="mse",
+            wwq=params.wwq,
+            waq=params.waq,
+            order=params.order,
+            act_quant=params.act_quant,
+            lr=params.calib_lr,
+            input_prob=params.input_prob,
+            keep_gpu=True,
+        )
+
+        if params.act_quant and params.order == "before" and params.awq is False:
+            """Case 2"""
+            set_act_quantize_params(
+                self.decoder_q, cali_data=cali_data, awq=params.awq, order=params.order
+            )
+
+        """init weight quantizer"""
+        set_weight_quantize_params(self.decoder_q)
+        if not params.use_adaround:
+            set_act_quantize_params(
+                self.decoder_q, cali_data=cali_data, awq=params.awq, order=params.order
+            )
+            self.decoder_q.set_quant_state(weight_quant=True, act_quant=params.act_quant)
+            return self.decoder_q
+        else:
+
+            def set_weight_act_quantize_params(module):
+                if isinstance(module, QuantModule):
+                    layer_reconstruction(self.decoder_q, module, **kwargs)
+                elif isinstance(module, BaseQuantBlock):
+                    block_reconstruction(self.decoder_q, module, **kwargs)
+                else:
+                    raise NotImplementedError
+
+            def recon_model(model: nn.Module):
+                """
+                Block reconstruction. For the first and last layers, we can only apply layer reconstruction.
+                """
+                for name, module in model.named_children():
+                    if isinstance(module, QuantModule):
+                        print("Reconstruction for layer {}".format(name))
+                        set_weight_act_quantize_params(module)
+                    elif isinstance(module, BaseQuantBlock):
+                        print("Reconstruction for block {}".format(name))
+                        set_weight_act_quantize_params(module)
+                    else:
+                        recon_model(module)
+
+            # Start calibration
+            recon_model(self.decoder_q)
+
+            if params.act_quant and params.order == "after" and params.waq is False:
+                """Case 1"""
+                set_act_quantize_params(
+                    self.decoder_q, cali_data=cali_data, awq=params.awq, order=params.order
+                )
+
+            self.decoder_q.set_quant_state(weight_quant=True, act_quant=params.act_quant)
+            return self.decoder_q
 
     @torch.no_grad()
     def forward(self, x, x_lengths, n_timesteps, temperature=1.0, stoc=False, spk=None, length_scale=1.0):

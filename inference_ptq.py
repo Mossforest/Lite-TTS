@@ -37,16 +37,6 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--timesteps', type=int, required=False, default=10, help='number of timesteps of reverse diffusion')
     parser.add_argument('-s', '--speaker_id', type=int, required=False, default=None, help='speaker id for multispeaker model')
     
-    # quantization parameters
-    parser.add_argument("--n_bits_w", default=8, type=int, help="bitwidth for weight quantization")
-    parser.add_argument("--channel_wise", action="store_true", help="apply channel_wise quantization for weights")
-    parser.add_argument("--init_wmode", default="mse", type=str, choices=["minmax", "mse", "minmax_scale"], help="init opt mode for weight")
-    parser.add_argument("--n_bits_a", default=8, type=int, help="bitwidth for activation quantization")
-    parser.add_argument("--init_amode", default="mse", type=str, choices=["minmax", "mse", "minmax_scale"], help="init opt mode for activation")
-    parser.add_argument("--prob", default=0.5, type=float)
-    parser.add_argument("--disable_8bit_head_stem", action="store_true")
-    
-    
     args = parser.parse_args()
     
     if not isinstance(args.speaker_id, type(None)):
@@ -65,4 +55,4 @@ if __name__ == '__main__':
     _ = generator.cuda().eval()
     print(f'Number of parameters: {generator.nparams}')
     
-    model = generator.quant_model(args)
+    model = generator.quant_model(params)

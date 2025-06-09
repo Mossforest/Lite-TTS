@@ -1,0 +1,642 @@
+QuantModel(
+  (model): Diffusion(
+    (estimator): GradLogPEstimator2d(
+      (time_pos_emb): SinusoidalPosEmb()
+      (mlp): Sequential(
+        (0): QuantModule(
+          wbit=8, abit=8, disable_act_quant=False
+          (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+          (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+          (activation_function): StraightThrough()
+        )
+        (1): Mish()
+        (2): QuantModule(
+          wbit=8, abit=8, disable_act_quant=False
+          (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+          (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+          (activation_function): StraightThrough()
+        )
+      )
+      (downs): ModuleList(
+        (0): ModuleList(
+          (0): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+          (1): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): Identity()
+          )
+          (2): Residual(
+            (fn): Rezero(
+              (fn): LinearAttention(
+                (to_qkv): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (to_out): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+              )
+            )
+          )
+          (3): Downsample(
+            (conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+        )
+        (1): ModuleList(
+          (0): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+          (1): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): Identity()
+          )
+          (2): Residual(
+            (fn): Rezero(
+              (fn): LinearAttention(
+                (to_qkv): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (to_out): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+              )
+            )
+          )
+          (3): Downsample(
+            (conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+        )
+        (2): ModuleList(
+          (0): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+          (1): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): Identity()
+          )
+          (2): Residual(
+            (fn): Rezero(
+              (fn): LinearAttention(
+                (to_qkv): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (to_out): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+              )
+            )
+          )
+          (3): Identity()
+        )
+      )
+      (ups): ModuleList(
+        (0): ModuleList(
+          (0): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+          (1): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 128, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): Identity()
+          )
+          (2): Residual(
+            (fn): Rezero(
+              (fn): LinearAttention(
+                (to_qkv): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (to_out): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+              )
+            )
+          )
+          (3): Upsample(
+            (conv): ConvTranspose2d(128, 128, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+          )
+        )
+        (1): ModuleList(
+          (0): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+          (1): ResnetBlock(
+            (mlp): Sequential(
+              (0): Mish()
+              (1): QuantModule(
+                wbit=8, abit=8, disable_act_quant=False
+                (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                (activation_function): StraightThrough()
+              )
+            )
+            (block1): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (block2): Block(
+              (block): Sequential(
+                (0): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+                (2): Mish()
+              )
+            )
+            (res_conv): Identity()
+          )
+          (2): Residual(
+            (fn): Rezero(
+              (fn): LinearAttention(
+                (to_qkv): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+                (to_out): QuantModule(
+                  wbit=8, abit=8, disable_act_quant=False
+                  (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+                  (activation_function): StraightThrough()
+                )
+              )
+            )
+          )
+          (3): Upsample(
+            (conv): ConvTranspose2d(64, 64, kernel_size=(4, 4), stride=(2, 2), padding=(1, 1))
+          )
+        )
+      )
+      (mid_block1): ResnetBlock(
+        (mlp): Sequential(
+          (0): Mish()
+          (1): QuantModule(
+            wbit=8, abit=8, disable_act_quant=False
+            (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+            (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+            (activation_function): StraightThrough()
+          )
+        )
+        (block1): Block(
+          (block): Sequential(
+            (0): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+            (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+            (2): Mish()
+          )
+        )
+        (block2): Block(
+          (block): Sequential(
+            (0): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+            (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+            (2): Mish()
+          )
+        )
+        (res_conv): Identity()
+      )
+      (mid_attn): Residual(
+        (fn): Rezero(
+          (fn): LinearAttention(
+            (to_qkv): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+            (to_out): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+          )
+        )
+      )
+      (mid_block2): ResnetBlock(
+        (mlp): Sequential(
+          (0): Mish()
+          (1): QuantModule(
+            wbit=8, abit=8, disable_act_quant=False
+            (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+            (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+            (activation_function): StraightThrough()
+          )
+        )
+        (block1): Block(
+          (block): Sequential(
+            (0): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+            (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+            (2): Mish()
+          )
+        )
+        (block2): Block(
+          (block): Sequential(
+            (0): QuantModule(
+              wbit=8, abit=8, disable_act_quant=False
+              (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+              (activation_function): StraightThrough()
+            )
+            (1): GroupNorm(8, 256, eps=1e-05, affine=True)
+            (2): Mish()
+          )
+        )
+        (res_conv): Identity()
+      )
+      (final_block): Block(
+        (block): Sequential(
+          (0): QuantModule(
+            wbit=8, abit=8, disable_act_quant=False
+            (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+            (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+            (activation_function): StraightThrough()
+          )
+          (1): GroupNorm(8, 64, eps=1e-05, affine=True)
+          (2): Mish()
+        )
+      )
+      (final_conv): QuantModule(
+        wbit=8, abit=8, disable_act_quant=True
+        (weight_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+        (act_quantizer): UniformAffineQuantizer(bit=8, is_training=False, inited=True)
+        (activation_function): StraightThrough()
+      )
+    )
+  )
+)

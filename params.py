@@ -51,3 +51,29 @@ learning_rate = 1e-4
 seed = 37
 save_every = 1
 out_size = fix_len_compatibility(2*22050//256)
+
+# quantization parameters
+n_bits_w = 8
+channel_wise = True
+init_wmode = 'mse'
+n_bits_a = 8
+init_wmode = 'mse'
+prob = 0.5
+disable_8bit_head_stem = False
+
+# random calibrate dataset
+calib_num_samples = 1024
+iters_w = 100
+weight = 0.01
+b_start = 20
+b_end = 2
+warmup = 0.2
+wwq = True
+waq = True
+awq = True
+aaq = True
+order = 'together'
+act_quant = True
+calib_lr = 4e-5
+input_prob = 0.5
+use_adaround = False
