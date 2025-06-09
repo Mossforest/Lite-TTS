@@ -277,9 +277,14 @@ class Diffusion(BaseModule):
     
     @torch.no_grad()
     def reverse_diffusion_calib(self, z, mask, mu, n_timesteps, times, stoc=False, spk=None):
+        print('n_timesteps:',n_timesteps)
+        print('times:',times)
         h = 1.0 / n_timesteps
         xt = z * mask
+        xt_calib = []
         for i in range(n_timesteps):
+            # print('i:',i)
+            # print('times:', i in times)
             t = (1.0 - (i + 0.5)*h) * torch.ones(z.shape[0], dtype=z.dtype, 
                                                  device=z.device)
             time = t.unsqueeze(-1).unsqueeze(-1)
@@ -296,9 +301,12 @@ class Diffusion(BaseModule):
                 dxt = 0.5 * (mu - xt - self.estimator(xt, mask, mu, t, spk))
                 dxt = dxt * noise_t * h
             xt = (xt - dxt) * mask
-            if i == times:
-                return xt
-            return None
+            if i in times:
+                xt_calib.append(xt)
+                xt_calib = torch.cat(xt_calib,dim=0)
+                print('xt_calib:',xt_calib.shape)
+                return xt_calib
+        return None
 
     
     @torch.no_grad()

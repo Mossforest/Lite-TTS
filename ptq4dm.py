@@ -110,32 +110,34 @@ def generate_t(args, t_mode, num_samples, num_timesteps, device):
     if t_mode == "1":
         t = torch.tensor([1] * num_samples, device=device)  # TODO timestep gen
     elif t_mode == "-1":
-        t = torch.tensor(
-            [num_timesteps - 1] * num_samples, device=device
-        )  # TODO timestep gen
+        # t = torch.tensor(
+        #     [num_timesteps - 1] * num_samples, device=device
+        # )  # TODO timestep gen
+        t = torch.tensor([0.9] * num_samples, device=device)
     elif t_mode == "mean":
         t = torch.tensor(
             [num_timesteps // 2] * num_samples, device=device
-        )  # TODO timestep gen
+        )/100  # TODO timestep gen
     elif t_mode == "manual":
         t = torch.tensor(
             [num_timesteps * 0.1] * num_samples, device=device
-        )  # TODO timestep gen
+        )/100  # TODO timestep gen
     elif t_mode == "normal":
         shape = torch.Tensor(num_samples)
-        normal_val = torch.nn.init.normal_(shape, mean=args.calib_t_mode_normal_mean, std=args.calib_t_mode_normal_std)*num_timesteps
-        t = normal_val.clone().type(torch.int).to(device=device)
+        normal_val = torch.nn.init.normal_(shape, mean=args.calib_t_mode_normal_mean, std=args.calib_t_mode_normal_std)*num_timesteps/100
+        # t = normal_val.clone().type(torch.int).to(device=device)
+        t = normal_val.clone().to(device=device)
         # print(t.shape)
         # print(t[0:30])
     elif t_mode == "random":
         # t = torch.randint(0, diffusion.num_timesteps, [num_samples], device=device)
-        t = torch.randint(0, int(num_timesteps*0.8), [num_samples], device=device)
+        t = torch.randint(int(num_timesteps*0.5), int(num_timesteps), [num_samples], device=device)/100
         print(t.shape)
         print(t)
     elif t_mode == "uniform":
         t = torch.linspace(
             0, num_timesteps, num_samples, device=device
-        ).round()
+        ).round()/100
     else:
         raise NotImplementedError
     return t.clamp(0, num_timesteps - 1)
@@ -176,13 +178,15 @@ def quant_model(args, model, num_timesteps):
     # print(qnn)
     print("sampling calib data")
     if args.calib_im_mode == "random":
-        cali_data = random_calib_data_generator(
-            args,
-            args.calib_num_samples,
-            "cuda",
-            args.calib_t_mode,
-            num_timesteps,
-        )
+            cali_data = random_calib_data_generator(
+                args,
+                args.calib_num_samples,
+                "cuda",
+                args.calib_t_mode,
+                num_timesteps,
+            )
+            
+            
     elif args.calib_im_mode == "raw":
         cali_data = raw_calib_data_generator(
             args,
@@ -388,9 +392,9 @@ def backward_t_calib_data_generator(
     y_lengths = y_lengths.to(device)
     spk = spk.to(device)
     t = generate_t(args,t_mode, num_samples, num_timesteps, device)
-    x_t = model.forward_calib_backward(x, x_lengths, num_timesteps,t, temperature=1.5, stoc=False, spk=spk, length_scale=1.0)
+    _, y_t, y_lengths,_ = model.forward_calib_backward(x, x_lengths, num_timesteps,t, temperature=1.5, stoc=False, spk=spk, length_scale=1.0)
     
-    return x, x_lengths, spk,x_t
+    return x, x_lengths, y_t, y_lengths, t, spk
 
 
 

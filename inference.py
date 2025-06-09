@@ -74,7 +74,7 @@ if __name__ == '__main__':
             x_lengths = torch.LongTensor([x.shape[-1]]).cuda()
             
             t = dt.datetime.now()
-            y_enc, y_dec, attn = generator.forward(x, x_lengths, n_timesteps=args.timesteps, temperature=1.5,
+            y_enc, y_dec, attn = generator.forward_infer(x, x_lengths, n_timesteps=args.timesteps, temperature=1.5,
                                                    stoc=False, spk=spk, length_scale=0.91)
             t = (dt.datetime.now() - t).total_seconds()
             print(f'Grad-TTS RTF: {t * 22050 / (y_dec.shape[-1] * 256)}')
